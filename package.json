@@ -1,0 +1,53 @@
+{
+  "name": "util.keymaster",
+  "version": "0.0.0",
+  "author": "jmquigley <jmquigley@outlook.com>",
+  "description": "Command line for generating SSH keys and self signed certs for a project.",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jmquigley/util.keymaster"
+  },
+  "bugs": {
+    "url": "https://github.com/jmquigley/util.keymaster/issues"
+  },
+  "engines": {
+    "node": ">=7.5"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "util.pkgwrap": "0.0.20",
+    "util.rstrip": "0.0.14",
+    "uuid": "^3.0.1",
+    "yargs": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "2.0.0",
+    "@types/lodash": "^4.14.58",
+    "@types/node": "^7.0.11",
+    "@types/uuid": "^2.0.29",
+    "@types/yargs": "^6.6.0",
+    "ava": "^0.18.2",
+    "coveralls": "^2.12.0",
+    "fs-extra": "^2.1.2",
+    "nyc": "^10.1.2",
+    "tslint": "^4.5.1",
+    "typescript": "^2.2.1",
+    "util.fixture": "0.0.43"
+  },
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "bin": {
+    "keymaster": "./cli.js"
+  },
+  "scripts": {
+    "all": "npm run lint && npm run build && npm test && npm run report",
+    "build": "./node_modules/.bin/pkgwrap --build",
+    "coverage": "./node_modules/.bin/pkgwrap --coverage",
+    "lint": "./node_modules/.bin/pkgwrap --lint",
+    "postinstall": "./node_modules/.bin/pkgwrap --postinstall",
+    "report": "./node_modules/.bin/pkgwrap --reporting",
+    "test": "./node_modules/.bin/pkgwrap --testing --ava"
+  }
+}
