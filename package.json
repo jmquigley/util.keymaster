@@ -17,24 +17,30 @@
   },
   "dependencies": {
     "lodash": "^4.17.4",
+    "log4js": "^1.1.1",
+    "util.join": "0.0.5",
     "util.pkgwrap": "0.0.20",
     "util.rstrip": "0.0.14",
+    "util.timestamp": "0.0.21",
+    "util.toolbox": "0.0.16",
     "uuid": "^3.0.1",
     "yargs": "^7.0.2"
   },
   "devDependencies": {
     "@types/fs-extra": "2.0.0",
-    "@types/lodash": "^4.14.58",
-    "@types/node": "^7.0.11",
+    "@types/lodash": "^4.14.61",
+    "@types/log4js": "0.0.32",
+    "@types/node": "^7.0.12",
     "@types/uuid": "^2.0.29",
     "@types/yargs": "^6.6.0",
     "ava": "^0.18.2",
-    "coveralls": "^2.12.0",
+    "coveralls": "^2.13.0",
     "fs-extra": "^2.1.2",
-    "nyc": "^10.1.2",
-    "tslint": "^4.5.1",
-    "typescript": "^2.2.1",
-    "util.fixture": "0.0.43"
+    "lodash": "^4.17.4",
+    "nyc": "^10.2.0",
+    "tslint": "^5.0.0",
+    "typescript": "^2.2.2",
+    "util.fixture": "0.0.45"
   },
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -42,12 +48,19 @@
     "keymaster": "./cli.js"
   },
   "scripts": {
-    "all": "npm run lint && npm run build && npm test && npm run report",
+    "all": "npm install && npm run lint && npm run build && npm test && npm run report",
     "build": "./node_modules/.bin/pkgwrap --build",
     "coverage": "./node_modules/.bin/pkgwrap --coverage",
     "lint": "./node_modules/.bin/pkgwrap --lint",
     "postinstall": "./node_modules/.bin/pkgwrap --postinstall",
     "report": "./node_modules/.bin/pkgwrap --reporting",
     "test": "./node_modules/.bin/pkgwrap --testing --ava"
+  },
+  "keymaster": {
+    "envTypes": [
+      "development",
+      "testing",
+      "production"
+    ]
   }
 }
