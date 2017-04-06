@@ -3,7 +3,9 @@ import * as _ from 'lodash';
 import * as log4js from 'log4js';
 import {join} from 'util.join';
 import {timestamp} from 'util.timestamp';
-import {failure, success} from 'util.toolbox';
+import {callSync, failure, isWin, success} from 'util.toolbox';
+
+const empty = require('empty-dir');
 
 const pkg = require('./package.json');
 
@@ -11,14 +13,15 @@ export interface IKeyMasterOpts {
 	backup?: boolean;
 	base?: string;
 	certs?: boolean;
+	company?: string;
 	directory?: string;
 	env?: string;
-	envs?: string[];
 	help?: boolean;
 	init?: boolean;
 	keys?: boolean;
+	hostname?: string;
 	pwhash?: boolean;
-	user?: string;
+	users?: string;
 }
 
 const log = log4js.getLogger();
@@ -27,9 +30,12 @@ const log = log4js.getLogger();
 export class KeyMaster {
 
 	public static envTypes: string[] = pkg.keymaster.envTypes;
+	public static sshKeys: string[] = pkg.keymaster.sshKeys;
 
 	private opts: IKeyMasterOpts = null;
-	private backedUp: string[] = [];
+	private _backedUp: string[] = [];
+	private _envs: string[] = KeyMaster.envTypes;
+	private _users: string[] = KeyMaster.sshKeys;
 
 	/*
 	 * Creates an instance of the KeyMaster class.  It takes a list of options
@@ -43,18 +49,23 @@ export class KeyMaster {
 			backup: false,
 			base: '',
 			certs: false,
+			company: 'NA',
 			directory: join('~/', '.keymaster'),
 			env: 'all',
-			envs: KeyMaster.envTypes,
+			hostname: 'localhost',
 			help: false,
 			init: false,
 			keys: false,
 			pwhash: false,
-			user: ''
+			users: ''
 		}, opts);
 
-		if (this.env !== 'all') {
-			this.opts.envs = [this.env];
+		if (this.opts.env !== 'all') {
+			this._envs = [this.opts.env];
+		}
+
+		if (this.opts.users !== '') {
+			this._users = this.opts.users.split(',');
 		}
 
 		if (this.opts.certs || this.opts.keys || this.opts.pwhash) {
@@ -73,13 +84,127 @@ export class KeyMaster {
 		if (self.opts.init) {
 			return this.initializeRepository();
 		} else {
+			if (!fs.existsSync(self.opts.directory)) {
+				log.error(`Repository doesn't exist @ ${self.opts.directory}`);
+				return failure;
+			}
+
 			if (this.opts.backup) {
-				this.createBackup();
+				if (this.createBackup() !== success) {
+					return failure;
+				}
+			}
+
+			if (this.opts.certs) {
+				if (this.createCerts() !== success) {
+					return failure;
+				}
+			}
+
+			if (this.opts.keys) {
+				if (this.createKeys() !== success) {
+					return failure;
+				}
 			}
 		}
 
 		log.info('Done');
 		return success;
+	}
+
+	/*
+	 * Creates the self signed certs for the requested environment
+	 * type.  It uses [openssl](https://www.openssl.org/docs/) to create them.
+	 *
+	 * It takes the results of the `--env` option to determine what certs to
+	 * create.  The 'all' option is selected by default.  The list of types
+	 * are in package.json -> keymaster.envTypes.  This resolves the list of
+	 * keys for 'all'.
+	 *
+	 * These certs should not be used in a live production environment.  The
+	 * production versions created here are only for INITIAL shakeout and
+	 * development.  They are not part of any cert authority.
+	 *
+	 * @param self {KeyMaster} a reference to the this pointer for the class
+	 */
+	private createCerts(self = this): number {
+		let rc: number = success;
+
+		self.envs.forEach((env: string) => {
+			log.info(`Creating certs for environment: ${env}`);
+
+			const key = `${self.opts.directory}/${env}.key`;
+			const cert = `${self.opts.directory}/${env}.pem`;
+			const subj = `-subj '/CN=${self.opts.hostname}/O=${self.opts.company}/C=US'`;
+
+			rc = callSync([
+				'openssl',
+				'req',
+				'-nodes',
+				'-newkey',
+				'rsa:2048',
+				'-x509',
+				'-days',
+				'9999',
+				'-keyout',
+				key,
+				'-out',
+				cert,
+				subj
+			]);
+
+			if (!isWin) {
+				fs.chmodSync(key, '700');
+				fs.chmodSync(cert, '700');
+			}
+		});
+
+		return rc;
+	}
+
+	/*
+	 * Creates SSH keys for a list of users.  The default users are:
+	 *
+	 *   - centos (default AWS user for centos)
+	 *   - buildmaster (development CI/CD build account)
+	 *
+	 * Each user will generate two files:
+	 *
+	 *   - id_rsa.{user}
+	 *   - id_rsa.{user}.pub
+	 */
+	private createKeys(self = this): number {
+		let rc: number = success;
+
+		self.users.forEach((user: string) => {
+			const prv = `${self.opts.directory}/id_rsa.${user}`;
+			const pub = `${self.opts.directory}/id_rsa.${user}.pub`;
+
+			if (fs.existsSync(prv)) {
+				fs.removeSync(prv);
+			}
+			if (fs.existsSync(pub)) {
+				fs.removeSync(pub);
+			}
+
+			rc = callSync([
+				'ssh-keygen',
+				'-t',
+				'rsa',
+				`-N ""`,
+				'-b',
+				'2048',
+				'-f',
+				prv
+			]);
+
+			if (!isWin) {
+				fs.chmodSync(prv, '700');
+				fs.chmodSync(pub, '700');
+			}
+		});
+
+		return rc;
 	}
 
 	/*
@@ -89,18 +214,27 @@ export class KeyMaster {
 	 * the repository are backed up.
 	 * @param self {KeyMaster} a reference to the this pointer for the class
 	 */
-	private createBackup(self = this) {
-		const backupDir = join(self.opts.directory, 'backup', timestamp());
-		log.info(`Creating backup: ${backupDir}`);
+	private createBackup(self = this): number {
+		try {
+			if (!empty.sync(self.opts.directory)) {
+				const backupDir = join(self.opts.directory, 'backup', timestamp());
+				log.info(`Creating backup: ${backupDir}`);
 
-		const files = fs.readdirSync(self.opts.directory)
-						.filter(file => fs.statSync(join(self.opts.directory, file)).isFile());
-		files.forEach((filename: string) => {
-			const src = join(self.opts.directory, filename);
-			const dst = join(backupDir, filename);
-			fs.copySync(src, dst);
-			self.backedUp.push(dst);
-		});
+				const files = fs.readdirSync(self.opts.directory)
+								.filter(file => fs.statSync(join(self.opts.directory, file)).isFile());
+				files.forEach((filename: string) => {
+					const src = join(self.opts.directory, filename);
+					const dst = join(backupDir, filename);
+					fs.copySync(src, dst);
+					self._backedUp.push(dst);
+				});
+			}
+		} catch (err) {
+			log.error(err.message);
+			return failure;
+		}
+
+		return success;
 	}
 
 	/*
@@ -110,21 +244,31 @@ export class KeyMaster {
 	 * @returns {number} the status of the operation.  A 0 is success, 127 is
 	 * failure.
 	*/
-	private initializeRepository(self = this) {
+	private initializeRepository(self = this): number {
 		if (fs.existsSync(self.opts.directory)) {
 			log.warn(`Keymaster repository already exists (skipping): ${self.opts.directory}`);
 			return failure;
 		}
 
 		log.info(`Initializing repository in ${self.opts.directory}`);
-		const directories = [
-			self.opts.directory,
-			join(self.opts.directory, 'base'),
-			join(self.opts.directory, 'backup')
-		];
-		directories.forEach((directory: string) => {
-			fs.mkdirSync(directory);
-		});
+		try {
+			const directories = [
+				self.opts.directory,
+				join(self.opts.directory, 'base'),
+				join(self.opts.directory, 'backup')
+			];
+			directories.forEach((directory: string) => {
+				fs.mkdirSync(directory);
+			});
+
+			if (self.opts.base !== '') {
+				fs.copySync(self.opts.base, self.opts.directory);
+				fs.copySync(self.opts.base, join(self.opts.directory, 'base'));
+			}
+		} catch (err) {
+			log.error(err.message);
+			return failure;
+		}
 
 		return success;
 	}
@@ -134,7 +278,7 @@ export class KeyMaster {
 	}
 
 	get backupFiles(): string[] {
-		return _.cloneDeep(this.backedUp);
+		return _.cloneDeep(this._backedUp);
 	}
 
 	get base(): string {
@@ -143,6 +287,10 @@ export class KeyMaster {
 
 	get certs(): boolean {
 		return this.opts.certs;
+	}
+
+	get company(): string {
+		return this.opts.company;
 	}
 
 	get directory(): string {
@@ -154,7 +302,7 @@ export class KeyMaster {
 	}
 
 	get envs(): string[] {
-		return this.opts.envs;
+		return _.cloneDeep(this._envs);
 	}
 
 	get help(): boolean {
@@ -169,11 +317,15 @@ export class KeyMaster {
 		return this.opts.keys;
 	}
 
+	get hostname(): string {
+		return this.opts.hostname;
+	}
+
 	get pwhash(): boolean {
 		return this.opts.pwhash;
 	}
 
-	get user(): string {
-		return this.opts.user;
+	get users(): string[] {
+		return _.cloneDeep(this._users);
 	}
 }

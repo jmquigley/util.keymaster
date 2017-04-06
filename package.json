@@ -16,13 +16,14 @@
     "node": ">=7.5"
   },
   "dependencies": {
+    "empty-dir": "^0.2.1",
     "lodash": "^4.17.4",
     "log4js": "^1.1.1",
     "util.join": "0.0.5",
     "util.pkgwrap": "0.0.20",
     "util.rstrip": "0.0.14",
     "util.timestamp": "0.0.21",
-    "util.toolbox": "0.0.16",
+    "util.toolbox": "0.0.17",
     "uuid": "^3.0.1",
     "yargs": "^7.0.2"
   },
@@ -36,7 +37,6 @@
     "ava": "^0.18.2",
     "coveralls": "^2.13.0",
     "fs-extra": "^2.1.2",
-    "lodash": "^4.17.4",
     "nyc": "^10.2.0",
     "tslint": "^5.0.0",
     "typescript": "^2.2.2",
@@ -61,6 +61,10 @@
       "development",
       "testing",
       "production"
+    ],
+    "sshKeys": [
+      "buildmaster",
+      "centos"
     ]
   }
 }
