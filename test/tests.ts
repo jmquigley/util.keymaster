@@ -403,3 +403,69 @@ test('Test the creation of custom SSH keys', t => {
 	t.true(fs.existsSync(join(directory, 'id_rsa.b')));
 	t.true(fs.existsSync(join(directory, 'id_rsa.b.pub')));
 });
+
+test('Test creation of new keys against existing', t => {
+	const fixture = new Fixture('test-existing');
+	const directory = join(fixture.dir, '.keymaster');
+	const argv = require('yargs')([
+		'--keys',
+		`--directory=${directory}`
+	]).argv;
+
+	const keymaster = new KeyMaster(argv);
+
+	t.truthy(keymaster);
+	t.true(keymaster.backup);
+	t.is(keymaster.base, '');
+	t.false(keymaster.certs);
+	t.is(keymaster.directory, directory);
+	t.is(keymaster.env, 'all');
+	t.deepEqual(keymaster.envs, KeyMaster.envTypes);
+	t.false(keymaster.help);
+	t.false(keymaster.init);
+	t.true(keymaster.keys);
+	t.false(keymaster.pwhash);
+	t.deepEqual(keymaster.users, KeyMaster.sshKeys);
+
+	t.is(keymaster.run(), success);
+
+	t.true(fs.existsSync(join(directory, 'id_rsa.centos')));
+	t.true(fs.existsSync(join(directory, 'id_rsa.centos.pub')));
+	t.true(fs.existsSync(join(directory, 'id_rsa.buildmaster')));
+	t.true(fs.existsSync(join(directory, 'id_rsa.buildmaster.pub')));
+
+	keymaster.backupFiles.forEach((filename: string) => {
+		t.true(fs.existsSync(filename));
+		t.not(fs.readFileSync(filename),
+			  fs.readFileSync(join(directory, path.basename(filename))));
+	});
+})
+
+test('Test the creation of the random password hash file', t => {
+	const fixture = new Fixture('test-existing');
+	const directory = join(fixture.dir, '.keymaster');
+	const argv = require('yargs')([
+		'--pwhash',
+		`--directory=${directory}`
+	]).argv;
+
+	const keymaster = new KeyMaster(argv);
+
+	t.truthy(keymaster);
+	t.true(keymaster.backup);
+	t.is(keymaster.base, '');
+	t.false(keymaster.certs);
+	t.is(keymaster.directory, directory);
+	t.is(keymaster.env, 'all');
+	t.deepEqual(keymaster.envs, KeyMaster.envTypes);
+	t.false(keymaster.help);
+	t.false(keymaster.init);
+	t.false(keymaster.keys);
+	t.true(keymaster.pwhash);
+	t.deepEqual(keymaster.users, KeyMaster.sshKeys);
+
+	t.is(keymaster.run(), success);
+
+	t.true(fs.existsSync(join(directory, 'pw.hash')));
+	t.is(fs.readFileSync(join(directory, 'pw.hash')).length, 32);
+})

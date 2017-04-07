@@ -65,6 +65,10 @@
     "sshKeys": [
       "buildmaster",
       "centos"
-    ]
+    ],
+    "hash": {
+      "size": 32,
+      "combo": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    }
   }
 }

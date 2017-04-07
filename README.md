@@ -45,6 +45,7 @@ This will create a new repository located in ``~/.keymaster``.  This is an empty
 
 Note that if the default directory ``~/.keymaster`` exists, then this process will terminate with a warning.
 
+
 #### Create a new repository with a base set of files
 
 ```
@@ -52,6 +53,7 @@ keymaster --init --base=~/some/directory/with/keys
 ```
 
 This will create a new empty repository (like the first example).  It will copy the contents of the base directory into the new repo.  This is a way to use seed a new repository with a base set of files.
+
 
 #### Create self-signed certs
 
@@ -67,6 +69,7 @@ testing.key & testing.pem
 production.key & production.pem
 ```
 
+
 #### Create self-signed cert for development only
 
 ```
@@ -74,6 +77,7 @@ keymaster --certs --env=development
 ```
 
 This would only create the keys ``development.key`` and ``development.pem`` in the repo.
+
 
 #### Create ssh keys for default user list
 
@@ -88,6 +92,7 @@ id_rsa.buildmaster & id_rsa.buildmaster.pub
 id_rsa.centos & id_rsa.centos.pub
 ```
 
+
 #### Create ssh keys for a user named 'foo'
 
 ```
@@ -100,6 +105,16 @@ The names of the keys after this call would be:
 id_rsa.foo & id_rsa.foo.pub
 ```
 
+
+#### Create a random hash file
+
+```
+keymaster --pwhash
+```
+
+Creates a random hash file named ``pw.hash``.  By default this is a file with 32 random alphanumeric bytes.
+
+
 #### Backup the current repository
 
 ```
@@ -107,3 +122,13 @@ keymaster --backup
 ```
 
 This facility it called automatically when new keys/certs are created.  If one wants to force a backup, then this option is used.
+
+
+#### Create certs, keys, and password hash
+
+```
+keymaster --init
+keymaster --certs --keys --pwhash
+```
+
+This will create a new default repository (in `~/.keymaster`) assuming it doesn't exist.  The second command will create new versions of the certs, the keys, and a new password hash file.

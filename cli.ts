@@ -5,7 +5,7 @@
 import {join} from 'util.join';
 import {KeyMaster} from './index';
 
-const argv = require('yargs')
+const yargs = require('yargs')
 	.usage('Usage: $0 --init [--base={}] | --certs [options] | --keys [options]')
 	.describe('init', 'Creates an initial repository.  This option is mutuall exclusive to the others.')
 	.default('init', false)
@@ -37,6 +37,11 @@ const argv = require('yargs')
 	.describe('users', 'A comma separated list of user names/ids associated with the RSA keys that will be created')
 	.version()
 	.help()
-	.argv;
+	.showHelpOnFail(false, 'Specify --help for available options');
 
-new KeyMaster(argv).run();
+if (process.argv.length <= 2) {
+	yargs.showHelp();
+} else {
+	console.log(process.argv.length);
+	new KeyMaster(yargs.argv).run();
+}

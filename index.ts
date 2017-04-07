@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as log4js from 'log4js';
 import {join} from 'util.join';
 import {timestamp} from 'util.timestamp';
-import {callSync, failure, isWin, success} from 'util.toolbox';
+import {callSync, encoding, failure, isWin, success} from 'util.toolbox';
 
 const empty = require('empty-dir');
 
@@ -106,6 +106,12 @@ export class KeyMaster {
 					return failure;
 				}
 			}
+
+			if (this.opts.pwhash) {
+				if (this.createPasswordHash() !== success) {
+					return failure;
+				}
+			}
 		}
 
 		log.info('Done');
@@ -205,6 +211,37 @@ export class KeyMaster {
 		});
 
 		return rc;
+	}
+
+	/*
+	 * Creates a string of random characters.  The default size is set to
+	 * 32 alpha-numeric characters.  This is defined in the package.json
+	 * The bytes are saved in a file named `pw.hash`.
+	 * @param self {KeyMaster} a reference to the this pointer for the class
+	 */
+	private createPasswordHash(self = this): number {
+		try {
+			const hashfile = join(self.opts.directory, 'pw.hash');
+			const key = [];
+			const hash = pkg.keymaster.hash;
+
+			log.info(`Create password hash file: ${hashfile}`);
+
+			for (let i = 0; i < hash.size; i++) {
+				key.push(hash.combo.charAt(Math.floor(Math.random() * hash.combo.length)));
+			}
+
+			fs.writeFileSync(hashfile, key.join(''), encoding);
+
+			if (!isWin) {
+				fs.chmodSync(hashfile, '700');
+			}
+		} catch (err) {
+			log.error(err.message);
+			return failure;
+		}
+
+		return success;
 	}
 
 	/*
