@@ -268,7 +268,7 @@ test('Test creation of --cert with invalid repo directory', t => {
 	t.deepEqual(keymaster.users, KeyMaster.sshKeys);
 
 	t.is(keymaster.run(), failure);
-})
+});
 
 test('Test the creation of self-signed cert for development', t => {
 	const fixture = new Fixture('test-empty');
@@ -437,9 +437,9 @@ test('Test creation of new keys against existing', t => {
 	keymaster.backupFiles.forEach((filename: string) => {
 		t.true(fs.existsSync(filename));
 		t.not(fs.readFileSync(filename),
-			  fs.readFileSync(join(directory, path.basename(filename))));
+			fs.readFileSync(join(directory, path.basename(filename))));
 	});
-})
+});
 
 test('Test the creation of the random password hash file', t => {
 	const fixture = new Fixture('test-existing');
@@ -468,4 +468,4 @@ test('Test the creation of the random password hash file', t => {
 
 	t.true(fs.existsSync(join(directory, 'pw.hash')));
 	t.is(fs.readFileSync(join(directory, 'pw.hash')).length, 32);
-})
+});
