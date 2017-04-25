@@ -19,17 +19,17 @@
     "empty-dir": "^0.2.1",
     "lodash": "^4.17.4",
     "log4js": "^1.1.1",
-    "util.join": "0.0.7",
+    "util.join": "0.0.8",
     "util.pkgwrap": "0.0.26",
-    "util.rstrip": "0.0.16",
-    "util.timestamp": "0.0.26",
-    "util.toolbox": "0.0.25",
+    "util.rstrip": "0.0.17",
+    "util.timestamp": "0.0.27",
+    "util.toolbox": "0.0.26",
     "uuid": "^3.0.1",
     "yargs": "^7.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "2.1.0",
-    "@types/lodash": "^4.14.62",
+    "@types/lodash": "^4.14.63",
     "@types/log4js": "0.0.32",
     "@types/node": "^7.0.13",
     "@types/uuid": "^2.0.29",
@@ -40,7 +40,7 @@
     "nyc": "^10.2.0",
     "tslint": "^5.1.0",
     "typescript": "^2.2.2",
-    "util.fixture": "0.0.48"
+    "util.fixture": "0.0.50"
   },
   "main": "./index.js",
   "types": "./index.d.ts",
