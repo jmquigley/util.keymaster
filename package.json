@@ -1,6 +1,6 @@
 {
   "name": "util.keymaster",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "jmquigley <jmquigley@outlook.com>",
   "description": "Command line for generating SSH keys and self signed certs for a project.",
   "private": false,
