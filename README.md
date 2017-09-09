@@ -16,19 +16,21 @@ It requires the following command line dependencies to generate the keys:
 
 ## Installation
 
+This module uses [yarn](https://yarnpkg.com/en/) to manage dependencies and run scripts for development.
+
 To install as a global package and cli:
 ```
-$ npm install --global util.keymaster
+$ yarn global add util.keymaster
 ```
 
 To install as a development dependency with cli:
 ```
-$ npm install --save-dev util.keymaster
+$ yarn add --dev util.keymaster
 ```
 
 To build the app and run all tests:
 ```
-$ npm run all
+$ yarn run all
 ```
 
 
