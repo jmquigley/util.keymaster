@@ -21,18 +21,18 @@
     "empty-dir": "^0.2.1",
     "lodash": "^4.17.4",
     "log4js": "^2.3.12",
-    "util.join": "0.0.16",
-    "util.rstrip": "0.0.31",
-    "util.timestamp": "0.0.34",
-    "util.toolbox": "0.0.55",
+    "util.join": "0.0.17",
+    "util.rstrip": "0.0.32",
+    "util.timestamp": "0.0.35",
+    "util.toolbox": "0.0.56",
     "uuid": "^3.1.0",
     "yargs": "^10.0.3"
   },
   "devDependencies": {
     "@types/fs-extra": "4.0.5",
-    "@types/lodash": "^4.14.86",
+    "@types/lodash": "^4.14.87",
     "@types/log4js": "2.3.5",
-    "@types/node": "^8.0.53",
+    "@types/node": "^8.0.54",
     "@types/uuid": "^3.4.3",
     "@types/yargs": "^8.0.2",
     "ava": "^0.24.0",
@@ -41,7 +41,8 @@
     "nyc": "^11.3.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2",
-    "util.fixture": "0.0.60"
+    "util.fixture": "0.0.61",
+    "util.pkgwrap": "^0.0.88"
   },
   "bin": {
     "keymaster": "./cli.js"
@@ -73,11 +74,10 @@
   },
   "scripts": {
     "all": "yarn install && yarn run build && yarn test && yarn run report",
-    "build": "yarn run clean && yarn run lint && pkgwrap --build",
+    "build": "yarn clean && yarn run lint && pkgwrap --build",
     "clean": "pkgwrap --clean",
     "coverage": "pkgwrap --coverage",
     "lint": "pkgwrap --lint",
-    "preinstall": "yarn global add util.pkgwrap",
     "prepublishOnly": "yarn run all",
     "report": "pkgwrap --reporting",
     "test": "pkgwrap --testing --ava"
