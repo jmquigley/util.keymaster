@@ -1,6 +1,6 @@
 {
   "name": "util.keymaster",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "author": "jmquigley <jmquigley@outlook.com>",
   "description": "Command line for generating SSH keys and self signed certs for a project.",
   "main": "./index.js",
@@ -63,12 +63,12 @@
   },
   "pkgwrap": {
     "cleanup": [
-			"cli.js",
-			"cli.d.ts",
-			"index.js",
-			"index.d.ts",
+      "cli.js",
+      "cli.d.ts",
+      "index.js",
+      "index.d.ts",
       "test/tests.js",
-			"test/tests.d.ts"
+      "test/tests.d.ts"
     ]
   },
   "scripts": {
