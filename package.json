@@ -3,6 +3,8 @@
   "version": "0.0.10",
   "author": "jmquigley <jmquigley@outlook.com>",
   "description": "Command line for generating SSH keys and self signed certs for a project.",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "private": false,
   "license": "MIT",
   "repository": {
@@ -13,49 +15,36 @@
     "url": "https://github.com/jmquigley/util.keymaster/issues"
   },
   "engines": {
-    "node": ">=7.5"
+    "node": ">=7.x"
   },
   "dependencies": {
     "empty-dir": "^0.2.1",
     "lodash": "^4.17.4",
     "log4js": "^2.3.12",
-    "util.join": "0.0.15",
-    "util.pkgwrap": "0.0.73",
-    "util.rstrip": "0.0.28",
-    "util.timestamp": "0.0.33",
-    "util.toolbox": "0.0.53",
+    "util.join": "0.0.16",
+    "util.rstrip": "0.0.31",
+    "util.timestamp": "0.0.34",
+    "util.toolbox": "0.0.55",
     "uuid": "^3.1.0",
     "yargs": "^10.0.3"
   },
   "devDependencies": {
     "@types/fs-extra": "4.0.5",
-    "@types/lodash": "^4.14.85",
+    "@types/lodash": "^4.14.86",
     "@types/log4js": "2.3.5",
     "@types/node": "^8.0.53",
     "@types/uuid": "^3.4.3",
     "@types/yargs": "^8.0.2",
-    "ava": "^0.23.0",
+    "ava": "^0.24.0",
     "coveralls": "^3.0.0",
     "fs-extra": "^4.0.2",
     "nyc": "^11.3.0",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1",
-    "util.fixture": "0.0.59"
+    "typescript": "^2.6.2",
+    "util.fixture": "0.0.60"
   },
-  "main": "./index.js",
-  "types": "./index.d.ts",
   "bin": {
     "keymaster": "./cli.js"
-  },
-  "scripts": {
-    "all": "yarn install && yarn run clean && yarn run lint && yarn run build && yarn test && yarn run report",
-    "build": "pkgwrap --build",
-    "clean": "pkgwrap --clean",
-    "coverage": "pkgwrap --coverage",
-    "lint": "pkgwrap --lint",
-    "postinstall": "pkgwrap --postinstall",
-    "report": "pkgwrap --reporting",
-    "test": "pkgwrap --testing --ava"
   },
   "keymaster": {
     "envTypes": [
@@ -71,5 +60,26 @@
       "size": 32,
       "combo": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     }
+  },
+  "pkgwrap": {
+    "cleanup": [
+			"cli.js",
+			"cli.d.ts",
+			"index.js",
+			"index.d.ts",
+      "test/tests.js",
+			"test/tests.d.ts"
+    ]
+  },
+  "scripts": {
+    "all": "yarn install && yarn run build && yarn test && yarn run report",
+    "build": "yarn run clean && yarn run lint && pkgwrap --build",
+    "clean": "pkgwrap --clean",
+    "coverage": "pkgwrap --coverage",
+    "lint": "pkgwrap --lint",
+    "preinstall": "yarn global add util.pkgwrap",
+    "prepublishOnly": "yarn run all",
+    "report": "pkgwrap --reporting",
+    "test": "pkgwrap --testing --ava"
   }
 }
