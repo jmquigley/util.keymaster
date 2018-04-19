@@ -18,31 +18,31 @@
     "node": ">=7.x"
   },
   "dependencies": {
-    "empty-dir": "^0.2.1",
-    "lodash": "^4.17.4",
-    "log4js": "^2.3.12",
-    "util.join": "0.0.17",
-    "util.rstrip": "0.0.32",
-    "util.timestamp": "0.0.35",
-    "util.toolbox": "0.0.56",
-    "uuid": "^3.1.0",
-    "yargs": "^10.0.3"
+    "empty-dir": "^1.0.0",
+    "lodash": "^4.17.5",
+    "log4js": "^2.5.3",
+    "util.join": "0.0.18",
+    "util.rstrip": "0.0.34",
+    "util.timestamp": "0.0.36",
+    "util.toolbox": "0.0.58",
+    "uuid": "^3.2.1",
+    "yargs": "^11.0.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "4.0.5",
-    "@types/lodash": "^4.14.87",
+    "@types/fs-extra": "5.0.2",
+    "@types/lodash": "^4.14.107",
     "@types/log4js": "2.3.5",
-    "@types/node": "^8.0.54",
+    "@types/node": "^9.6.6",
     "@types/uuid": "^3.4.3",
-    "@types/yargs": "^8.0.2",
-    "ava": "^0.24.0",
+    "@types/yargs": "^11.0.0",
+    "ava": "^0.25.0",
     "coveralls": "^3.0.0",
-    "fs-extra": "^4.0.2",
-    "nyc": "^11.3.0",
-    "tslint": "^5.8.0",
-    "typescript": "^2.6.2",
-    "util.fixture": "0.0.61",
-    "util.pkgwrap": "^0.0.88"
+    "fs-extra": "^5.0.0",
+    "nyc": "^11.7.1",
+    "tslint": "^5.9.1",
+    "typescript": "^2.8.1",
+    "util.fixture": "0.0.62",
+    "util.pkgwrap": "^0.0.91"
   },
   "bin": {
     "keymaster": "./cli.js"
