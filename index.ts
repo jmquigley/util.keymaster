@@ -1,15 +1,15 @@
-import * as fs from 'fs-extra';
-import * as _ from 'lodash';
-import * as log4js from 'log4js';
-import {join} from 'util.join';
-import {timestamp} from 'util.timestamp';
-import {callSync, encoding, failure, isWin, success} from 'util.toolbox';
+import * as fs from "fs-extra";
+import * as _ from "lodash";
+import * as log4js from "log4js";
+import {join} from "util.join";
+import {timestamp} from "util.timestamp";
+import {callSync, encoding, failure, isWin, success} from "util.toolbox";
 
-const empty = require('empty-dir');
+const empty = require("empty-dir");
 
-const pkg = require('./package.json');
+const pkg = require("./package.json");
 
-export interface IKeyMasterOpts {
+export interface KeyMasterOpts {
 	backup?: boolean;
 	base?: string;
 	certs?: boolean;
@@ -28,11 +28,10 @@ const log = log4js.getLogger();
 
 /* Creates an instance of the KeyMaster class */
 export class KeyMaster {
-
 	public static envTypes: string[] = pkg.keymaster.envTypes;
 	public static sshKeys: string[] = pkg.keymaster.sshKeys;
 
-	private opts: IKeyMasterOpts = null;
+	private opts: KeyMasterOpts = null;
 	private _backedUp: string[] = [];
 	private _envs: string[] = KeyMaster.envTypes;
 	private _users: string[] = KeyMaster.sshKeys;
@@ -41,31 +40,34 @@ export class KeyMaster {
 	 * Creates an instance of the KeyMaster class.  It takes a list of options
 	 * provided by the command line to determine what will be created within
 	 * the class.
-	 * @param opts {IKeyMasterOpts} the command line options that are set for
+	 * @param opts {KeyMasterOpts} the command line options that are set for
 	 * this class.
-	*/
-	constructor(opts?: IKeyMasterOpts) {
-		this.opts = Object.assign({
-			backup: false,
-			base: '',
-			certs: false,
-			company: 'NA',
-			directory: join('~/', '.keymaster'),
-			env: 'all',
-			hostname: 'localhost',
-			help: false,
-			init: false,
-			keys: false,
-			pwhash: false,
-			users: ''
-		}, opts);
+	 */
+	constructor(opts?: KeyMasterOpts) {
+		this.opts = Object.assign(
+			{
+				backup: false,
+				base: "",
+				certs: false,
+				company: "NA",
+				directory: join("~/", ".keymaster"),
+				env: "all",
+				hostname: "localhost",
+				help: false,
+				init: false,
+				keys: false,
+				pwhash: false,
+				users: ""
+			},
+			opts
+		);
 
-		if (this.opts.env !== 'all') {
+		if (this.opts.env !== "all") {
 			this._envs = [this.opts.env];
 		}
 
-		if (this.opts.users !== '') {
-			this._users = this.opts.users.split(',');
+		if (this.opts.users !== "") {
+			this._users = this.opts.users.split(",");
 		}
 
 		if (this.opts.certs || this.opts.keys || this.opts.pwhash) {
@@ -77,9 +79,9 @@ export class KeyMaster {
 	 * The main entry point for creation of keys.  This is the only public
 	 * method exposed by the class.  The class is constructed with options and
 	 * then this method is called to perform the requested actions.
-	*/
+	 */
 	public run(self = this) {
-		log.info('Running Keymaster');
+		log.info("Running Keymaster");
 
 		if (self.opts.init) {
 			return this.initializeRepository();
@@ -114,7 +116,7 @@ export class KeyMaster {
 			}
 		}
 
-		log.info('Done');
+		log.info("Done");
 		return success;
 	}
 
@@ -141,27 +143,29 @@ export class KeyMaster {
 
 			const key = `${self.opts.directory}/${env}.key`;
 			const cert = `${self.opts.directory}/${env}.pem`;
-			const subj = `-subj '/CN=${self.opts.hostname}/O=${self.opts.company}/C=US'`;
+			const subj = `-subj '/CN=${self.opts.hostname}/O=${
+				self.opts.company
+			}/C=US'`;
 
 			rc = callSync([
-				'openssl',
-				'req',
-				'-nodes',
-				'-newkey',
-				'rsa:2048',
-				'-x509',
-				'-days',
-				'9999',
-				'-keyout',
+				"openssl",
+				"req",
+				"-nodes",
+				"-newkey",
+				"rsa:2048",
+				"-x509",
+				"-days",
+				"9999",
+				"-keyout",
 				key,
-				'-out',
+				"-out",
 				cert,
 				subj
 			]);
 
 			if (!isWin) {
-				fs.chmodSync(key, '700');
-				fs.chmodSync(cert, '700');
+				fs.chmodSync(key, "700");
+				fs.chmodSync(cert, "700");
 			}
 		});
 
@@ -194,19 +198,19 @@ export class KeyMaster {
 			}
 
 			rc = callSync([
-				'ssh-keygen',
-				'-t',
-				'rsa',
+				"ssh-keygen",
+				"-t",
+				"rsa",
 				`-N ""`,
-				'-b',
-				'2048',
-				'-f',
+				"-b",
+				"2048",
+				"-f",
 				prv
 			]);
 
 			if (!isWin) {
-				fs.chmodSync(prv, '700');
-				fs.chmodSync(pub, '700');
+				fs.chmodSync(prv, "700");
+				fs.chmodSync(pub, "700");
 			}
 		});
 
@@ -221,20 +225,24 @@ export class KeyMaster {
 	 */
 	private createPasswordHash(self = this): number {
 		try {
-			const hashfile = join(self.opts.directory, 'pw.hash');
+			const hashfile = join(self.opts.directory, "pw.hash");
 			const key = [];
 			const hash = pkg.keymaster.hash;
 
 			log.info(`Create password hash file: ${hashfile}`);
 
 			for (let i = 0; i < hash.size; i++) {
-				key.push(hash.combo.charAt(Math.floor(Math.random() * hash.combo.length)));
+				key.push(
+					hash.combo.charAt(
+						Math.floor(Math.random() * hash.combo.length)
+					)
+				);
 			}
 
-			fs.writeFileSync(hashfile, key.join(''), encoding);
+			fs.writeFileSync(hashfile, key.join(""), encoding);
 
 			if (!isWin) {
-				fs.chmodSync(hashfile, '700');
+				fs.chmodSync(hashfile, "700");
 			}
 		} catch (err) {
 			log.error(err.message);
@@ -254,11 +262,18 @@ export class KeyMaster {
 	private createBackup(self = this): number {
 		try {
 			if (!empty.sync(self.opts.directory)) {
-				const backupDir = join(self.opts.directory, 'backup', timestamp());
+				const backupDir = join(
+					self.opts.directory,
+					"backup",
+					timestamp()
+				);
 				log.info(`Creating backup: ${backupDir}`);
 
-				const files = fs.readdirSync(self.opts.directory)
-								.filter(file => fs.statSync(join(self.opts.directory, file)).isFile());
+				const files = fs
+					.readdirSync(self.opts.directory)
+					.filter((file) =>
+						fs.statSync(join(self.opts.directory, file)).isFile()
+					);
 				files.forEach((filename: string) => {
 					const src = join(self.opts.directory, filename);
 					const dst = join(backupDir, filename);
@@ -280,10 +295,14 @@ export class KeyMaster {
 	 * @param self {KeyMaster} a reference to the this pointer for the class
 	 * @returns {number} the status of the operation.  A 0 is success, 127 is
 	 * failure.
-	*/
+	 */
 	private initializeRepository(self = this): number {
 		if (fs.existsSync(self.opts.directory)) {
-			log.warn(`Keymaster repository already exists (skipping): ${self.opts.directory}`);
+			log.warn(
+				`Keymaster repository already exists (skipping): ${
+					self.opts.directory
+				}`
+			);
 			return failure;
 		}
 
@@ -291,16 +310,16 @@ export class KeyMaster {
 		try {
 			const directories = [
 				self.opts.directory,
-				join(self.opts.directory, 'base'),
-				join(self.opts.directory, 'backup')
+				join(self.opts.directory, "base"),
+				join(self.opts.directory, "backup")
 			];
 			directories.forEach((directory: string) => {
 				fs.mkdirSync(directory);
 			});
 
-			if (self.opts.base !== '') {
+			if (self.opts.base !== "") {
 				fs.copySync(self.opts.base, self.opts.directory);
-				fs.copySync(self.opts.base, join(self.opts.directory, 'base'));
+				fs.copySync(self.opts.base, join(self.opts.directory, "base"));
 			}
 		} catch (err) {
 			log.error(err.message);
