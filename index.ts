@@ -3,7 +3,8 @@ import * as _ from "lodash";
 import * as log4js from "log4js";
 import {join} from "util.join";
 import {timestamp} from "util.timestamp";
-import {callSync, encoding, failure, isWin, success} from "util.toolbox";
+import {encoding, failure, isWin, success} from "util.toolbox";
+import {callSync} from "util.toolbox-node";
 
 const empty = require("empty-dir");
 

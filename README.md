@@ -2,7 +2,7 @@
 
 > Command line for generating SSH keys and self signed certs for a project.
 
-[![build](https://travis-ci.org/jmquigley/util.keymaster.svg?branch=master)](https://travis-ci.org/jmquigley/util.keymaster)
+[![build](https://circleci.com/gh/jmquigley/util.keymaster/tree/master.svg?style=shield)](https://circleci.com/gh/jmquigley/util.keymaster/tree/master)
 [![analysis](https://img.shields.io/badge/analysis-tslint-9cf.svg)](https://palantir.github.io/tslint/)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![testing](https://img.shields.io/badge/testing-jest-blue.svg)](https://facebook.github.io/jest/)
