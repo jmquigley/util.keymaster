@@ -2,16 +2,15 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
-import {Fixture} from "util.fixture";
+import {cleanup, Fixture} from "util.fixture";
 import {join} from "util.join";
 import {failure, success} from "util.toolbox";
 import * as uuid from "uuid";
-import {cleanup} from "./helpers";
 
 import {KeyMaster} from "../index";
 
 afterAll((done) => {
-	cleanup(path.basename(__filename), done);
+	cleanup({done, message: path.basename(__filename)});
 });
 
 test("Creates an empty KeyMaster class and verifies initial field settings", () => {
