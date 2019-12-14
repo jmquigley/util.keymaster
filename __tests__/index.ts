@@ -1,13 +1,13 @@
-"use strict";
-
 import * as fs from "fs-extra";
 import * as path from "path";
 import {cleanup, Fixture} from "util.fixture";
 import {join} from "util.join";
-import {failure, success} from "util.toolbox";
+import {failure, success} from "util.constants";
 import * as uuid from "uuid";
 
 import {KeyMaster} from "../index";
+
+const debug = require("debug")("util.keymaster.test");
 
 afterAll((done) => {
 	cleanup({done, message: path.basename(__filename)});
@@ -53,6 +53,8 @@ test("Creates an initial empty repository", () => {
 	const fixture = new Fixture();
 	const directory = join(fixture.dir, ".keymaster");
 	const argv = require("yargs")(["--init", `--directory=${directory}`]).argv;
+
+	debug(`directory: ${directory}`);
 
 	const keymaster = new KeyMaster(argv);
 

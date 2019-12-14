@@ -1,10 +1,10 @@
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as log4js from "log4js";
+import {encoding, failure, success} from "util.constants";
 import {join} from "util.join";
 import {timestamp} from "util.timestamp";
-import {encoding, failure, isWin, success} from "util.toolbox";
-import {callSync} from "util.toolbox-node";
+import {callSync, isWin} from "util.toolbox-node";
 
 const empty = require("empty-dir");
 
@@ -144,9 +144,7 @@ export class KeyMaster {
 
 			const key = `${self.opts.directory}/${env}.key`;
 			const cert = `${self.opts.directory}/${env}.pem`;
-			const subj = `-subj '/CN=${self.opts.hostname}/O=${
-				self.opts.company
-			}/C=US'`;
+			const subj = `-subj '/CN=${self.opts.hostname}/O=${self.opts.company}/C=US'`;
 
 			rc = callSync([
 				"openssl",
@@ -164,7 +162,7 @@ export class KeyMaster {
 				subj
 			]);
 
-			if (!isWin) {
+			if (!isWin()) {
 				fs.chmodSync(key, "700");
 				fs.chmodSync(cert, "700");
 			}
@@ -209,7 +207,7 @@ export class KeyMaster {
 				prv
 			]);
 
-			if (!isWin) {
+			if (!isWin()) {
 				fs.chmodSync(prv, "700");
 				fs.chmodSync(pub, "700");
 			}
@@ -242,7 +240,7 @@ export class KeyMaster {
 
 			fs.writeFileSync(hashfile, key.join(""), encoding);
 
-			if (!isWin) {
+			if (!isWin()) {
 				fs.chmodSync(hashfile, "700");
 			}
 		} catch (err) {
@@ -300,9 +298,7 @@ export class KeyMaster {
 	private initializeRepository(self = this): number {
 		if (fs.existsSync(self.opts.directory)) {
 			log.warn(
-				`Keymaster repository already exists (skipping): ${
-					self.opts.directory
-				}`
+				`Keymaster repository already exists (skipping): ${self.opts.directory}`
 			);
 			return failure;
 		}
